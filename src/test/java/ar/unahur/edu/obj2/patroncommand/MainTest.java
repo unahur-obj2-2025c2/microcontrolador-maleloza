@@ -43,9 +43,4 @@ public class MainTest {
         assertEquals(15, microcontrolador.getAcumuladorA());
         assertEquals(0, microcontrolador.getAcumuladorB());
     }
-
-
-    
-    @Test 
-    void 
 }
