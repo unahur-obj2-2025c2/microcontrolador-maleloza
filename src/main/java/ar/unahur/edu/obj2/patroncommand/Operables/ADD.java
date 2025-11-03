@@ -9,10 +9,4 @@ public class ADD implements Operable{
         micro.setAcumuladorA(resultado);
         micro.setAcumuladorB(0);
     }
-
-    @Override
-    public void undo(Programable micro) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'undo'");
-    }   
 }

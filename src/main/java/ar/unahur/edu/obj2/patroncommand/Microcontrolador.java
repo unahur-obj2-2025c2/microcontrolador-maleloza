@@ -1,10 +1,10 @@
 package ar.unahur.edu.obj2.patroncommand;
 
-import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Deque;
 import java.util.List;
 
+import ar.unahur.edu.obj2.patroncommand.Operables.MicroMemento;
 import ar.unahur.edu.obj2.patroncommand.Operables.Operable;
 
 
@@ -13,7 +13,7 @@ public class Microcontrolador implements Programable{
     private Integer acumuladorA;
     private Integer acumuladorB;
     private Integer programCounter;
-    private Deque<Operable> historial = new ArrayDeque<>();
+    private List<MicroMemento> historial = new ArrayList<>();
 
     public Microcontrolador(){
         reset();
@@ -25,8 +25,8 @@ public class Microcontrolador implements Programable{
         while (programCounter < operaciones.size()) {
             Operable operacion = operaciones.get(programCounter);
             try {
+                guardarEstado();
                 operacion.execute(this);
-                historial.push
                 incProgramCounter();
             } catch (Exception e) {
                 throw new RuntimeException("Error en instrucción #" + programCounter + ": " + e.getMessage(), e);
@@ -78,18 +78,25 @@ public class Microcontrolador implements Programable{
         }
     }
 
-    @Override
-    public Programable copiar() {
-        Microcontrolador copia = new Microcontrolador();
-        copia.acumuladorA = this.acumuladorA;
-        copia.acumuladorB = this.acumuladorB;
-        copia.programCounter = this.programCounter;
-
+    public void guardarEstado() {
+        historial.add(new MicroMemento(memoria, acumuladorA, acumuladorB, programCounter));
     }
 
-    @Override
-    public void copiarDesde(Programable programable) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'copiarDesde'");
+    public void undo(){
+        if (!historial.isEmpty()){
+            MicroMemento previo = historial.remove(historial.size() - 1);
+            restaurarEstado(previo);
+        }
+    }
+
+    public void restaurarEstado(MicroMemento memento) {
+        acumuladorB = memento.getAcumuladorB();
+        acumuladorA = memento.getAcumuladorA();
+        programCounter = memento.getProgramCounter();
+        List<Integer> snapshot = memento.getMemoria();
+        for (int i = 0; i < memoria.size(); i++){
+            memoria.set(i, snapshot.get(i));
+        }
+
     }
 }
